@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        .box {
+            margin: 10px;
+
+            width:100%;
+            height:100000px;  
+            
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+            
+        }
+
+        .container-fluid {
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            grid-auto-rows: 200px;
+            grid-auto-flow: dense;
+            gap:10px;
+        }
+
+    </style>
+</head>
+<body>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Add a student
+    </button>
+
+    <!-- Add student modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add a student</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                    <form action="/students/add" method="post">
+                    
+                        <div class="mb-3">
+                            
+                            <input type="text" id="name" name="name" class="form-control form-control-lg" 
+                                placeholder="Name">
+                        </div>
+                        <div class="mb-3">
+                            
+                            <input type="number" id="weight" name="weight" class="form-control form-control-lg" 
+                                placeholder="Weight">
+                        </div>
+                        <div class="mb-3">
+                            
+                            <input type="number" id="height" name="height" class="form-control form-control-lg" 
+                                placeholder="Height">
+                        </div>
+                        <div class="mb-3">
+                            
+                            <input type="text" id="hair_colour" name="hair_colour" class="form-control form-control-lg" 
+                                placeholder="Hair Colour">
+                        </div>
+                        <div class="mb-3">
+                            
+                            <input type="number" id="gpa" name="gpa" class="form-control form-control-lg" step="0.1"
+                                placeholder="GPA">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <input class="btn btn-primary" type="submit" value="SEND"></input>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thymeleaf generated modification modals -->
+    <div th:each="student : ${stu}">
+        <div class="modal fade" th:id="'modal' + ${student.sid}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel" th:text="'Modify ' + ${student.name}"></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        
+                        <form action="/students/modify" method="post">
+                            <input type="hidden" name="sid" th:value="${student.sid}">
+                            <div class="mb-3">
+                                Name
+                                <input type="text" id="name" name="name" class="form-control form-control-lg" 
+                                    th:value="${student.name}">
+                            </div>
+                            <div class="mb-3">
+                                Weight
+                                <input type="number" id="weight" name="weight" class="form-control form-control-lg" 
+                                    th:value="${student.weight}">
+                            </div>
+                            <div class="mb-3">
+                                Height
+                                <input type="number" id="height" name="height" class="form-control form-control-lg" 
+                                    th:value="${student.height}">
+                            </div>
+                            <div class="mb-3">
+                                Hair colour
+                                <input type="text" id="hair_colour" name="hair_colour" class="form-control form-control-lg" 
+                                    th:value="${student.hair_colour}">
+                            </div>
+                            <div class="mb-3">
+                                GPA
+                                <input type="number" id="gpa" name="gpa" class="form-control form-control-lg" step="0.1"
+                                    th:value="${student.gpa}">
+                            </div>
+                            <div class="d-grid gap-2">
+                                <input class="btn btn-primary" type="submit" value="CONFIRM"></input>
+                            </div>
+                        </form>
+                        <form action="/students/delete" method="post">
+                            <input type="hidden" name="sid" th:value="${student.sid}">
+                            <input class="btn btn-danger" type="submit" value="DELETE STUDENT"></input>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <main class="container-fluid">
+        <div>
+            <button type="button"  data-bs-toggle="modal" th:each="student : ${stu}" th:style="'font-size: ' + (${student.weight} < ${student.height} ? ${student.weight} : ${student.height})*8 + '%; background-color: ' + ${student.hair_colour} + '; max-width: ' + ${student.weight}*10 + 'px; max-height: ' + ${student.height}*10 + 'px;'" class="box" th:attr="data-bs-target='#modal' + ${student.sid}">
+                <span th:text="${student.name}"></span><br/>
+                <span th:text="${student.gpa}"></span>
+            </button>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>
